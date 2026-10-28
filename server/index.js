@@ -1,24 +1,26 @@
-  import express from "express";
-  import dotenv from "dotenv";
-  import connectDb from "./config/mongoConnection.js";
-  import ApiHandler from "./middleware/errorHanlder.js";
-  import healthRoute from "./routes/healthRoute.js";
+import express from "express";
+import dotenv from "dotenv";
+import connectDb from "./config/mongoConnection.js";
+import ApiHandler from "./middleware/errorHanlder.js";
+import healthRoute from "./routes/healthRoute.js";
+import userRoute from "./routes/userRoute.js";
 
-  dotenv.config();
-  const app = express();
-  app.use(express.json());
+dotenv.config();
+const app = express();
+app.use(express.json());
 
-  const PORT = process.env.PORT || 4000;
-  connectDb();
+const PORT = process.env.PORT || 4000;
+connectDb();
 
-  app.get("/", (req, res) => {
-    res.send("Hello World");
-  });
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
 
-  app.use("/api/healthRoute", healthRoute);
+app.use("/api/user", userRoute);
+app.use("/api/healthRoute", healthRoute);
 
-  app.use(ApiHandler);
+app.use(ApiHandler);
 
-  app.listen(PORT, () => {
-    console.log(`Server running on PORT: ${PORT}`);
-  });
+app.listen(PORT, () => {
+  console.log(`Server running on PORT: ${PORT}`);
+});
