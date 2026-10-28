@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import connectDb from "./config/mongoConnection.js";
 import ApiHandler from "./middleware/errorHanlder.js";
+import healthRoute from "./routes/healthRoute.js";
 
 dotenv.config();
 const app = express();
@@ -13,6 +14,8 @@ connectDb();
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
+
+app.use("/api/healthRoute", healthRoute);
 
 app.use(ApiHandler);
 
