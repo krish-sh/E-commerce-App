@@ -50,6 +50,50 @@ const register = async (req, res) => {
   });
 };
 
-const login = async (req, res) => {};
+const login = async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    throw new ApiError(400, "Invalid credentials");
+  }
+
+  const user = await UserModel.findOne({ email }).select("+password");
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const passwordValid = await bcrypt.compare(password, user.password);
+  if (!passwordValid) {
+    throw new ApiError(401, "Password is not valid");
+  }
+
+  const token = jwt.sign(
+    { id: user._id, email: user.email, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" },
+  );
+
+  await res.cookie("token", token, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "Lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  }); 
+
+  const userResponse = {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+
+  res.status(200).json({
+    success: true,
+    message: "User LogeedIn",
+    userResponse,
+    token,
+  });
+};
+
+
 
 export { register, login };
