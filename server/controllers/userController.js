@@ -107,4 +107,15 @@ const logout = async (req, res) => {
   });
 };
 
-export { register, login, logout };
+const getProfile = async (req, res) => {
+  const user = await UserModel.findById(req.user.id);
+  if (!user) {
+    throw new ApiError(401, "Id is wrong");
+  }
+
+  res.status(201).json({
+    success: true,
+    user,
+  });
+};
+export { register, login, logout, getProfile };

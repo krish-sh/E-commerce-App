@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import connectDb from "./config/mongoConnection.js";
 import ApiHandler from "./middleware/errorHanlder.js";
 import healthRoute from "./routes/healthRoute.js";
-import userRoute from "./routes/userRoute.js";
+import { userRoute, middlewareRoute } from "./routes/userRoute.js";
 import cookieParser from "cookie-parser";
 
 dotenv.config();
@@ -20,6 +20,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/user", userRoute);
 app.use("/api/healthRoute", healthRoute);
+app.use("/profile", middlewareRoute);
 
 app.use(ApiHandler);
 
