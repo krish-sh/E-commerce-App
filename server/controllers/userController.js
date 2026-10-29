@@ -77,7 +77,7 @@ const login = async (req, res) => {
     secure: false,
     sameSite: "Lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
-  }); 
+  });
 
   const userResponse = {
     id: user._id,
@@ -94,6 +94,17 @@ const login = async (req, res) => {
   });
 };
 
+const logout = async (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "Lax",
+  });
 
+  res.status(200).json({
+    success: true,
+    message: "User LogedOut",
+  });
+};
 
-export { register, login };
+export { register, login, logout };
