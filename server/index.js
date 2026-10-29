@@ -4,10 +4,12 @@ import connectDb from "./config/mongoConnection.js";
 import ApiHandler from "./middleware/errorHanlder.js";
 import healthRoute from "./routes/healthRoute.js";
 import userRoute from "./routes/userRoute.js";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
 const PORT = process.env.PORT || 4000;
 connectDb();

@@ -1,37 +1,55 @@
 import UserModel from "../models/userModel.js";
-import bcrypt from "bcrypt";
 import { ApiError } from "../utils/apiError.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
   if (!email || !password) {
-    throw new ApiError(400, "Invalid credendial");
+    throw new ApiError(400, "Invalid credentials");
   }
 
-  const IsUserExist = await UserModel.findOne({ email });
-  if (IsUserExist) {
-    throw new ApiError(409, "Email already exist");
+  const isAlreadyLogin = await UserModel.findOne({ email });
+  if (isAlreadyLogin) {
+    throw new ApiError(409, "Already exist");
   }
-
-  const user = await UserModel.create({ name, email, password });
 
   const salt = await bcrypt.genSalt(12);
-  const newPassword = await bcrypt.hash(password, salt);
-  console.log(newPassword);
+  const hashedPassword = await bcrypt.hash(password, salt);
 
-  return res.status(201).json({
+  const user = await UserModel.create({
+    name,
+    email,
+    password: hashedPassword,
+  });
+
+  const token = jwt.sign(
+    { id: user._id, email: user.email, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" },
+  );
+
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "Lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  const userResponse = {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+
+  res.status(201).json({
     success: true,
     message: "User registered",
-    user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      password: newPassword,
-      role: user.role,
-    },
+    userResponse,
   });
 };
 
-const login = async () => {};
+const login = async (req, res) => {};
 
 export { register, login };
