@@ -1,5 +1,6 @@
 import ProductModel from "../models/ProductModel.js";
 import { ApiError } from "../utils/apiError.js";
+import mongoose from "mongoose";
 
 const addProducts = async (req, res) => {
   const { name, description, price, category, quantity, image } = req.body;
@@ -24,19 +25,20 @@ const addProducts = async (req, res) => {
 };
 
 const editProduct = async (req, res) => {
-  const { productId } = req.body;
+  const { id } = req.params;
 
   if (!mongoose.isValidObjectId(id)) {
     throw new ApiError(400, "Invalid product id");
   }
 
   const update = await ProductModel.findByIdAndUpdate(
-    productId,
+    id,
     {
       $set: req.body,
     },
     {
       new: true,
+      runValidators: true,
     },
   );
 
@@ -48,9 +50,21 @@ const editProduct = async (req, res) => {
     success: true,
     message: "Product is successfully updated",
     product: update,
-  });   
+  });
 };
 
-const deleteProduct = async (req, res) => {};
+const deleteProduct = async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.isValidObjectId(id)) {
+    throw new ApiError(400, "Invalid id");
+  }
 
-export { addProducts , editProduct, deleteProduct};
+  const deleteProduct = await ProductModel.findByIdAndDelete(id);
+  if (!deleteProduct) {
+    throw new ApiError(404, "Product not found");
+  }
+
+  res.status(200).json({ success: true, message: "deleted successfully" });
+};
+
+export { addProducts, editProduct, deleteProduct };
