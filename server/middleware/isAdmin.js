@@ -1,4 +1,4 @@
-import { ApiError } from "../utils/apiError";
+import { ApiError } from "../utils/apiError.js";
 
 
 const isAdmin = (req, res, next) => {

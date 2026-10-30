@@ -5,6 +5,7 @@ import ApiHandler from "./middleware/errorHanlder.js";
 import healthRoute from "./routes/healthRoute.js";
 import { userRoute, middlewareRoute } from "./routes/userRoute.js";
 import cookieParser from "cookie-parser";
+import product from "./routes/productRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -21,6 +22,7 @@ app.get("/", (req, res) => {
 app.use("/api/user", userRoute);
 app.use("/api/healthRoute", healthRoute);
 app.use("/profile", middlewareRoute);
+app.use("/admin", product);
 
 app.use(ApiHandler);
 
