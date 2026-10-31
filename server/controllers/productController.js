@@ -67,4 +67,62 @@ const deleteProduct = async (req, res) => {
   res.status(200).json({ success: true, message: "deleted successfully" });
 };
 
-export { addProducts, editProduct, deleteProduct };
+const increaseQuantity = async (req, res) => {
+  const { id } = req.params;
+  const { quantity } = req.body;
+
+  if (!mongoose.isValidObjectId(id)) {
+    throw new ApiError(400, "Id not be valid");
+  }
+
+  const changeStock = await ProductModel.findByIdAndUpdate(
+    id,
+    {
+      $inc: { quantity: quantity },
+    },
+    { new: true },
+  );
+
+  if (!changeStock) {
+    throw new Error(404, "Cannot find the product");
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Quantity increased successsfully",
+    changeStock,
+  });
+};
+
+const decreaseQuantity = async (req, res) => {
+  const { id } = req.params;
+  const { quantity } = req.body;
+
+  if (!mongoose.isValidObjectId(id)) {
+    throw new ApiError(400, "Id not be valid");
+  }
+
+  const changeStock = await ProductModel.findOneAndUpdate(
+    { _id: id, quantity: { $gte: quantity } },
+    { $inc: { quantity: -quantity } },
+    { new: true, upsert: true },
+  );
+
+  if (!changeStock) {
+    throw new ApiError(404, "Not product found");
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Product decreased successfully",
+    changeStock,
+  });
+};
+
+export {
+  addProducts,
+  editProduct,
+  deleteProduct,
+  increaseQuantity,
+  decreaseQuantity,
+};

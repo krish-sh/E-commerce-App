@@ -25,4 +25,11 @@ const updateProductSchema = createProductSchema
     message: "Provide at least one feild to update",
   });
 
-export { createProductSchema, updateProductSchema };
+const stockChangeSchema = z.object({
+  quantity: z.coerce
+    .number()
+    .int("Amount must be whole number")
+    .positive("Amount not be less than 0 "),
+});
+
+export { createProductSchema, updateProductSchema, stockChangeSchema };
