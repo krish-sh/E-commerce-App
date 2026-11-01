@@ -52,10 +52,13 @@ const getProductById = async (req, res) => {
   if (!product) {
     throw new ApiError(404, "Product cant found");
   }
+  const inStock = product.quantity > 0;
 
   res.status(200).json({
     success: true,
     product,
+    inStock,
+    stockStatus: inStock ? "In stock" : "out of stock",
   });
 };
 
