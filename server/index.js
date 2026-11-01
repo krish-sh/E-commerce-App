@@ -7,6 +7,7 @@ import { userRoute, middlewareRoute } from "./routes/userRoute.js";
 import cookieParser from "cookie-parser";
 import product from "./routes/productRoutes.js";
 import publicRouter from "./routes/publicProductRoute.js";
+import cartRouter from "./routes/cartRoute.js";
 
 dotenv.config();
 const app = express();
@@ -25,6 +26,7 @@ app.use("/api/healthRoute", healthRoute);
 app.use("/profile", middlewareRoute);
 app.use("/admin", product);
 app.use("/api/products/", publicRouter);
+app.use("/api/cart", cartRouter);
 
 app.use(ApiHandler);
 
