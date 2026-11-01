@@ -1,4 +1,6 @@
 import ProductModel from "../models/ProductModel.js";
+import mongoose from "mongoose";
+import { ApiError } from "../utils/apiError.js";
 
 const getAllProducts = async (req, res) => {
   const page = Math.max(parseInt(req.query.page) || 1, 1);
@@ -19,7 +21,9 @@ const getAllProducts = async (req, res) => {
     filter.category = req.query.category;
   }
   if (typeof req.query.search === "string" && req.query.search.trim()) {
-    const escaped = req.query.search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const escaped = req.query.search
+      .trim()
+      .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     filter.name = { $regex: escaped, $options: "i" };
   }
 
@@ -37,4 +41,22 @@ const getAllProducts = async (req, res) => {
   });
 };
 
-export { getAllProducts };
+const getProductById = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.isValidObjectId(id)) {
+    throw new ApiError(400, "Invalid product id");
+  }
+
+  const product = await ProductModel.findById(id);
+  if (!product) {
+    throw new ApiError(404, "Product cant found");
+  }
+
+  res.status(200).json({
+    success: true,
+    product,
+  });
+};
+
+export { getAllProducts, getProductById };
