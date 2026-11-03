@@ -51,7 +51,7 @@ const placeOrder = async (req, res) => {
         });
       }
       const [createOrder] = await OrderModel.create(
-        [{ user: userId, items, totalAmount }],
+        [{ user: userId, items, totalAmount, status: "pending" }],
         { session },
       );
 
@@ -74,4 +74,24 @@ const placeOrder = async (req, res) => {
   });
 };
 
-export { placeOrder };
+const orderHistory = async (req, res) => {
+  const userId = req.user?.id;
+  if (!userId) {
+    throw new ApiError(400, "Please logiin");
+  }
+
+  const history = await OrderModel.find({ user: userId })
+    .sort({ createdAt: -1 })
+    .populate("items.productId", "name image price");
+  if (!history) {
+    throw new ApiError(404, "Order hostory not found");
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "order history",
+    history,
+  });
+};
+
+export { placeOrder, orderHistory };
