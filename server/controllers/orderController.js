@@ -94,4 +94,33 @@ const orderHistory = async (req, res) => {
   });
 };
 
-export { placeOrder, orderHistory };
+const allOrderAdmin = async (req, res) => {
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 20;
+
+  const filter = {};
+  if (req.query.status) {
+    filter.status = req.query.status;
+  }
+
+  const [orders, total] = await Promise.all([
+    OrderModel.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate("user", "name email")
+      .populate("items.productId", "name image price"),
+    OrderModel.countDocuments(limit),
+  ]);
+
+  return res.status(200).json({
+    success: true,
+    message: "all orders",
+    total,
+    page,
+    pages: Math.ceil(total / limit),
+    orders,
+  });
+};
+
+export { placeOrder, orderHistory, allOrderAdmin };
