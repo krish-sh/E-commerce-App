@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 const itemSchema = new mongoose.Schema(
   {
@@ -11,7 +11,7 @@ const itemSchema = new mongoose.Schema(
       type: Number,
       required: true,
       min: [1, "Quantity must be at least 1"],
-      defualt: 1,
+      default: 1,
     },
     price: {
       type: Number,
@@ -27,7 +27,7 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: true,
+      index: true,
     },
     items: [itemSchema],
     totalAmount: {
@@ -37,7 +37,7 @@ const orderSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: {
-        value: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
+        values: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
       },
       defualt: "pending",
     },
@@ -45,7 +45,7 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+const OrderModel =
+  mongoose.models.Order || mongoose.model("Order", orderSchema);
 
-const OrderModel = mongoose.models.Order || mongoose.model("Order", orderSchema)
-
-export default OrderModel
+export default OrderModel;

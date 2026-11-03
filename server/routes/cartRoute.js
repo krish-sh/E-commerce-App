@@ -9,9 +9,9 @@ import tokenVerify from "../middleware/verifyToken.js";
 
 const cartRouter = express.Router();
 
-cartRouter.post("/add-item", tokenVerify, addItem);
+cartRouter.post("/add-item/", tokenVerify, addItem);
 cartRouter.post("/update-quantity", tokenVerify, updateQuantity);
-cartRouter.post("/", tokenVerify, getCart);
+cartRouter.get("/", tokenVerify, getCart);
 cartRouter.post("/delete-product/:id", tokenVerify, removeItem);
 
 export default cartRouter;
