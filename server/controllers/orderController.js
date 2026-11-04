@@ -123,4 +123,46 @@ const allOrderAdmin = async (req, res) => {
   });
 };
 
-export { placeOrder, orderHistory, allOrderAdmin };
+const updateStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const orderStatus = [
+    "pending",
+    "confirmed",
+    "shipped",
+    "delivered",
+    "cancelled",
+  ];
+
+  if (!id) {
+    throw new ApiError(400, "order not found");
+  }
+
+  if (!status || !orderStatus.includes(status)) {
+    throw new ApiError(
+      400,
+      `Order must be from one of this: ${orderStatus.join(", ")}`,
+    );
+  }
+
+  const update = await OrderModel.findById(id);
+  if (!update) {
+    throw new ApiError(404, "Order id not found");
+  }
+
+  if (["delivered", "cancelled"].includes(update.status)) {
+    throw new ApiError(400, `Order is already ${update.status}`);
+  }
+
+  update.status = status;
+  await update.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Order status updated",
+    update,
+  });
+};
+
+export { placeOrder, orderHistory, allOrderAdmin, updateStatus };
