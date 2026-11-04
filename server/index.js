@@ -9,9 +9,16 @@ import product from "./routes/productRoutes.js";
 import publicRouter from "./routes/publicProductRoute.js";
 import cartRouter from "./routes/cartRoute.js";
 import orderRoute from "./routes/orderRoute.js";
+import cors from "cors";
 
 dotenv.config();
 const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -28,7 +35,7 @@ app.use("/profile", middlewareRoute);
 app.use("/admin", product);
 app.use("/api/products/", publicRouter);
 app.use("/api/cart", cartRouter);
-app.use("/api/order", orderRoute)
+app.use("/api/order", orderRoute);
 
 app.use(ApiHandler);
 
